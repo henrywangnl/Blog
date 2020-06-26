@@ -1,0 +1,103 @@
+---
+title: "R Markdown to WordPress with goodpress"
+author: "Henry"
+date: "2020-06-26T00:00:00"
+output: hugodown::md_document
+status: "publish"
+slug: "rmarkdown-wordpress-goodpress"
+categories: R Programming
+tags:
+  - R Markdown
+  - goodpress
+  - WordPress
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+I have been writing a few posts about R on my blog and are getting annoyed with the workflow back and forth between RStudio and WordPress. Overall, the previous workflow has two main pitfalls making me frustrated:   
+
+- **R Code**
+
+Coping R code from RStudio and pasting it to WordPress can take me much time. Code highlight is also challenging, although eventually I figured out that the plugin of [SyntaxHighlighter Evolved](https://wordpress.org/plugins/syntaxhighlighter/) did a great job.
+
+- **R Output**
+
+Often I need to export R outputs (e.g., ggplot2 plots) and upload them to WordPress, sometimes formatting them a bit.
+
+```{=html}
+<!-- wp:more -->
+<!--more-->
+<!-- /wp:more -->
+```
+
+## goodpress
+
+These frustrations makes me seriously thinking about migrating my blog to [blogdown](https://bookdown.org/yihui/blogdown/) so that I could write blogs in R Markdown. However, for some reason, I kind of want to stick with WordPress and don't want a major change. For example, I really like this [Twenty Twelve](https://wordpress.org/themes/twentytwelve/) theme...
+
+Finally, I came across [goodpress](https://maelle.github.io/goodpress/) package from [Maëlle Salmon](https://twitter.com/ma_salmon), which **allows me to post from R Markdown to WordPress and keep the WordPress theme as is**. 
+So here comes my first experience with `goodpress`, which is really fun and thanks to Maëlle's help I finally work through the whole workflow.
+
+## Example
+
+As mentioned above, the most important feature I need is if `goodpress` could post R code and outputs to WordPress and render them as I expect, so I first checked with my previous [Tidytuesday](https://github.com/rfordatascience/tidytuesday) case.
+
+```{r message=FALSE}
+library(tidyverse)
+
+firsts <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-06-09/firsts.csv')
+```
+
+```{r}
+firsts
+```
+
+
+```{r}
+ggplot(firsts, aes(year, category, color = category)) +
+  geom_point(alpha = 0.6) +
+  scale_x_continuous(breaks = seq(1730, 2020, 10),
+                     expand = c(0.015, 0.975)) +
+  labs(x = NULL,
+       y = NULL,
+       title = "African American Achievements") +
+  theme(legend.position = "none",
+        plot.background = element_rect(fill = "black"),
+        plot.title = element_text(color = "white",
+                                      margin = margin(t = 10)),
+        panel.background = element_rect(fill = "black"),
+        panel.grid.major.x = element_blank(),
+        panel.grid.major.y = element_line(color = "white", size = 0.1, linetype = "dotted"),
+        panel.grid.minor = element_blank(),
+        axis.text = element_text(color = "white"),
+        axis.text.x = element_text(angle = -60, vjust = 1, hjust = 0),
+        axis.title = element_text(color = "white"))
+```
+
+It looks everything is perfect! For more inspirations, check `goodpress` demo site: [https://rmd-wordpress.eu/](https://rmd-wordpress.eu/).
+
+## Issues
+
+The `goodpress` [instructions](https://maelle.github.io/goodpress/index.html) are quite straightforward and you can follow the documentation step by step, but when I first tried `goodpress` I did have some issues that I want to point out so that you don't make the same mistakes I made.
+
+### Authentication Setup
+
+Following the steps in [Authentication](https://maelle.github.io/goodpress/articles/setup.html#authentication-1), the first mistake I made is that I should not use the WordPress user and password for `WP_USER` and `WP_PWD`. Instead, I should use the information of `Application Passwords` in WordPress, as shown below.
+
+```{r echo=FALSE, fig.cap="screenshot of the application password part of the WordPress dashboard"}
+knitr::include_graphics(file.path("figs", "wp.png"))
+```
+
+### YAML Format
+So far, `goodpress` seems very strict with the YAML metadata format. For example, for the `Author` you can either eliminate it or use one of the **existing usernames** of your WordPress. 
+I suggest to copy the YAML header from the documentation: [https://maelle.github.io/goodpress/index.html](https://maelle.github.io/goodpress/index.html).
+
+## More features
+`goodpress` is still a WIP package and only has one function of [wp_post](https://maelle.github.io/goodpress/reference/wp_post.html). While it solves my problem, I do look forward to more features to improve the whole experience. For example, I cannot remember all the category and tag names and I have to go back to check them on WordPress dashboard. Probably it can be done with another function so that I can forget WordPress dashboard? 
+
+## Final Note
+As shown above, `goodpress` is what I want and the workflow from R Markdown to WordPress is way better than before. I highly recommend it to WordPress users who often write blogs about R.
+
+
+*This post is written in R Markdown and posted to WordPress via `goodpress`(version: 0.0.0.9000)*.

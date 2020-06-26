@@ -10,7 +10,7 @@ tags:
   - R Markdown
   - goodpress
   - WordPress
-rmd_hash: b0aee8baec569002
+rmd_hash: 69e3b70afb039b97
 
 ---
 
@@ -106,7 +106,14 @@ Following the steps in [Authentication](https://maelle.github.io/goodpress/artic
 
 <div class="highlight">
 
-<img src="figs/wp.png" width="700px" style="display: block; margin: auto;" />
+<div class="figure" style="text-align: center">
+
+<img src="figs/wp.png" alt="screenshot of the application password part of the WordPress dashboard" width="700px" />
+<p class="caption">
+screenshot of the application password part of the WordPress dashboard
+</p>
+
+</div>
 
 </div>
 
