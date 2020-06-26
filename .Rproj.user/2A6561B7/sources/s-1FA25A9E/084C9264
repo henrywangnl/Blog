@@ -3,7 +3,7 @@
     "path": "~/R/Blog/20200625/index.Rmd",
     "project_path": "20200625/index.Rmd",
     "type": "r_markdown",
-    "hash": "3381090820",
+    "hash": "0",
     "contents": "",
     "dirty": false,
     "created": 1593107621247.0,
@@ -16,11 +16,11 @@
         "last_setup_crc32": "1FA25A9Ebb338d19"
     },
     "folds": "",
-    "lastKnownWriteTime": 1593175657,
+    "lastKnownWriteTime": 1593178086,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1593175657324,
+    "last_content_update": 1593178086,
     "read_only": false,
     "read_only_alternatives": []
 }
