@@ -10,7 +10,7 @@ tags:
   - R Markdown
   - goodpress
   - WordPress
-rmd_hash: 489ad5a28aa73883
+rmd_hash: b0aee8baec569002
 
 ---
 
@@ -106,7 +106,7 @@ Following the steps in [Authentication](https://maelle.github.io/goodpress/artic
 
 <div class="highlight">
 
-<img src="figs/wpuser.png" width="700px" style="display: block; margin: auto;" />
+<img src="figs/wp.png" width="700px" style="display: block; margin: auto;" />
 
 </div>
 
