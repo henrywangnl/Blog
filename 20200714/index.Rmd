@@ -1,0 +1,180 @@
+---
+title: "ROC Curve Simulation - Classification Performance"
+author: "Henry"
+date: "2020-07-14T19:00:00"
+output: hugodown::md_document
+status: "publish"
+slug: "roc-curve-simulation-classification-performance"
+categories: R Programming
+tags:
+  - ROC Curve
+  - Classification
+  - Logistic Regression
+---
+
+>"A receiver operating characteristic curve, or ROC curve, is a graphical plot that illustrates the diagnostic ability of a binary classifier system as its discrimination threshold is varied. The ROC curve is created by plotting the true positive rate against the false positive rate at various threshold settings." - Wikipedia
+
+Simulation can be very useful for us to understand some concepts in Statistics, as shown in [Probability in R](https://henrywang.nl/probability-in-r/). Here is another example that I used simulation to understand ROC Curve and AUC, the metrics in classification models that I had never fully understand. 
+
+## Data
+
+The simulation in this post was inspired by [OpenIntro Statistics](https://www.amazon.com/OpenIntro-Statistics-Third-David-Diez/dp/194345003X) and the `email` dataset I used can be found in `openintro` package.
+
+```{=html}
+<!-- wp:more -->
+<!--more-->
+<!-- /wp:more -->
+```
+
+```{r message=FALSE}
+library(tidyverse)
+
+# For the email dataset
+library(openintro)
+
+# For ROC curve plots 
+library(tidymodels)
+```
+
+
+```{r}
+email
+```
+These data represent incoming emails for the first three months of 2012 for an email account. The variables are explained clearly [here](http://openintrostat.github.io/openintro/reference/email.html).
+
+## Logistic Regression Model
+
+Basically the research question is to develop a valid `logistic regression` to predict if an email is `spam`. This post focuses on the ROC curve simulation so we will just jump to the final refined model as shown below.
+
+```{r}
+# data preparation
+df <- email %>% 
+  mutate(across(c(to_multiple, cc, image, attach, password, re_subj, urgent_subj), ~if_else(.x > 0, "yes", "no"))) %>% 
+  mutate(format = if_else(format == 0, "Plain", "Formated"))
+
+# fit logistic regression model
+g_refined <- glm(spam ~ to_multiple + cc + image + attach + winner
+                       + password + line_breaks + format + re_subj
+                       + urgent_subj + exclaim_mess, data=df, family=binomial)
+
+summary(g_refined)
+```
+
+The logistic regression model `g_refined` is developed and then we can fit it to our data (in practice you may want to fit it to your testing data instead of training data).
+
+```{r}
+pred <- df %>% 
+  select(spam_true = spam) %>% 
+  bind_cols(spam_prob = round(predict(g_refined, newdata = df, type = "response"), digits = 3))
+
+pred
+```
+As shown above, `spam_true` is the truth which shows if an email is a spam whereas `spam_prob` is the predicted probability that an email is a spam. Take the first email for example. Our `g_refined` predicted that there is only 8.4% chance that this email is a spam, which seems quite accurate. 
+
+## Probability Threshold
+
+The problem remains that what the probability threshold should be for the model to make the final prediction that an email is a spam or not. First, let's try an example of threshold of 0.75, which means that the model thinks an email is a spam if the predicted probability `spam_prob` higher than or equal to 0.75, otherwise not a spam, as shown below.
+
+```{r}
+pred_cutoff <- pred %>% 
+  mutate(cutoff = 0.75,
+         spam_pred = ifelse(spam_prob >= cutoff, 1, 0))
+
+pred_cutoff
+```
+As the predicted probability of the first email is 0.084, which is less than 0.75, this email is not identified as a spam (`spam_pred` = 0).
+
+Next, the metrics of this model can be computed as follows.
+
+```{r}
+pred_cutoff %>% 
+  summarize(cutoff = 0.75, 
+          TP = sum(spam_true == 1 & spam_pred == 1),
+          FP = sum(spam_true == 0 & spam_pred == 1),
+          TN = sum(spam_true == 0 & spam_pred == 0),
+          FN = sum(spam_true == 1 & spam_pred == 0),
+          sensitivity = TP / (TP + FN), 
+          specificity = TN / (FP + TN))
+```
+
+Overall, these metrics of classification models are illustrated below.
+
+```{r echo=FALSE, fig.cap="Classification Metrics from OpenIntro Statistics"}
+knitr::include_graphics(file.path("figs", "classification_metrics.png"))
+```
+
+Here is a nice way to illustrate these metrics graphically.
+
+```{r classification_metrics_illustration}
+ggplot(pred, aes(spam_prob, spam_true)) +
+  geom_jitter(height = 0.1, alpha = 0.5) +
+  geom_vline(xintercept = 0.75, color = "red") +
+  geom_hline(yintercept = 0.5, color = "red") +
+  scale_y_continuous(breaks = c(0, 1)) +
+  geom_text(label = "FN(354)", x = 0.35, y = 0.75, color = "red") +
+  geom_text(label = "TP(13)", x = 0.85, y = 0.75, color = "red") +
+  geom_text(label = "TN(3551)", x = 0.35, y = 0.35, color = "red") +
+  geom_text(label = "FP(3)", x = 0.85, y = 0.35, color = "red") +
+  labs(x = "Predicted Probability of Being Spam",
+       y = "Spam")
+```
+
+## ROC Simulation
+
+Now, after examining these metrics with the probability threshold of 0.75, we can move forward with simulation of all possible probability thresholds. 
+
+
+```{r}
+metrics_fun <- function(cutoff) {
+  pred %>% 
+    mutate(spam_pred = ifelse(spam_prob >= cutoff, 1, 0)) %>% 
+    summarize(cutoff = cutoff, 
+          TP = sum(spam_true == 1 & spam_pred == 1),
+          FP = sum(spam_true == 0 & spam_pred == 1),
+          TN = sum(spam_true == 0 & spam_pred == 0),
+          FN = sum(spam_true == 1 & spam_pred == 0),
+          sensitivity = TP / (TP + FN), 
+          specificity = TN / (FP + TN))
+}
+```
+
+We simulate around 1000 possible values of probability thresholds and compute `sensitivity` and `specificity` metrics accordingly. 
+
+```{r}
+cutoff <- seq(0, 1, 0.001)
+
+metrics <- cutoff %>% 
+  map(metrics_fun) %>% 
+  bind_rows()
+
+metrics
+```
+With the metrics value in place, we can plot `sensitivity`, true positive rate, against `1 - specificity`, false positive rate.
+```{r ROC_curve_manually}
+ggplot(metrics, aes(x = 1 - specificity, y = sensitivity)) +
+  geom_line(color = "red") +
+  geom_abline(linetype = "dotted", color = "grey50") +
+  labs(x = "False Positive Rate", y = "True Positive Rate") +
+  coord_equal()
+```
+This plot is called ROC curve, which shows the trade off between `sensitivity` and `specificity` for all possible probability thresholds. ROC curve is a straightforward way to compare classification model performance. More specifically, the area under the curve (AUC) can be used to assess the model performance. 
+
+## Tidymodels Approach
+
+While simulation is a good way to understand the concepts of classification metrics, it is not convenient to plot ROC curve. In essence, R has some packages to do this automatically. For example, [Tidymodels](https://www.tidymodels.org/) provides some tools such as `roc_curve()` and `roc_auc()` to plot ROC curve and calculate AUC.
+
+
+```{r ROC_curve_tidymodels}
+# plot ROC Curve in tidymodels
+pred %>% 
+  roc_curve(truth = factor(spam_true), spam_prob) %>% 
+  autoplot() +
+  labs(x = "False Positve Rate", y = "True Positive Rate")
+```
+
+
+```{r}
+pred %>% 
+  roc_auc(truth = factor(spam_true), spam_prob)
+```
+
