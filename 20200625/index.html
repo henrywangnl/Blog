@@ -1,55 +1,26 @@
----
-title: "R Markdown to WordPress with goodpress"
-author: "Henry"
-date: "2020-06-26T00:00:00"
-output: hugodown::md_document
-status: "publish"
-slug: "rmarkdown-wordpress-goodpress"
-categories: R Programming
-tags:
-  - R Markdown
-  - goodpress
-  - WordPress
-rmd_hash: 4f501cacf1131220
-
----
-
-I have been writing a few posts about R on my blog and are getting annoyed with the workflow back and forth between RStudio and WordPress. Overall, the previous workflow has two main pitfalls making me frustrated:
-
--   **R Code**
-
-Coping R code from RStudio and pasting it to WordPress can take me much time. Code highlight is also challenging, although eventually I figured out that the plugin of [SyntaxHighlighter Evolved](https://wordpress.org/plugins/syntaxhighlighter/) did a great job.
-
--   **R Output**
-
-Often I need to export R outputs (e.g., ggplot2 plots) and upload them to WordPress, sometimes formatting them a bit.
-
+<p>I have been writing a few posts about R on my blog and are getting annoyed with the workflow back and forth between RStudio and WordPress. Overall, the previous workflow has two main pitfalls making me frustrated:</p>
+<ul>
+<li><strong>R Code</strong></li>
+</ul>
+<p>Coping R code from RStudio and pasting it to WordPress can take me much time. Code highlight is also challenging, although eventually I figured out that the plugin of <a href="https://wordpress.org/plugins/syntaxhighlighter/">SyntaxHighlighter Evolved</a> did a great job.</p>
+<ul>
+<li><strong>R Output</strong></li>
+</ul>
+<p>Often I need to export R outputs (e.g., ggplot2 plots) and upload them to WordPress, sometimes formatting them a bit.</p>
 <!-- wp:more -->
 <!--more-->
 <!-- /wp:more -->
-
-goodpress
----------
-
-These frustrations makes me seriously thinking about migrating my blog to [blogdown](https://bookdown.org/yihui/blogdown/) so that I could write blogs in R Markdown. However, for some reason, I kind of want to stick with WordPress and don't want a major change. For example, I really like this [Twenty Twelve](https://wordpress.org/themes/twentytwelve/) theme...
-
-Finally, I came across [goodpress](https://maelle.github.io/goodpress/) package from [Maëlle Salmon](https://twitter.com/ma_salmon), which **allows me to post from R Markdown to WordPress and keep the WordPress theme as is**. So here comes my first experience with `goodpress`, which is really fun and thanks to Maëlle's help I finally work through the whole workflow.
-
-Example
--------
-
-As mentioned above, the most important feature I need is if `goodpress` could post R code and outputs to WordPress and render them as I expect, so I first checked with my previous [Tidytuesday](https://github.com/rfordatascience/tidytuesday) case.
-
+<h2 id="goodpress">goodpress</h2>
+<p>These frustrations makes me seriously thinking about migrating my blog to <a href="https://bookdown.org/yihui/blogdown/">blogdown</a> so that I could write blogs in R Markdown. However, for some reason, I kind of want to stick with WordPress and don’t want a major change. For example, I really like this <a href="https://wordpress.org/themes/twentytwelve/">Twenty Twelve</a> theme…</p>
+<p>Finally, I came across <a href="https://maelle.github.io/goodpress/">goodpress</a> package from <a href="https://twitter.com/ma_salmon">Maëlle Salmon</a>, which <strong>allows me to post from R Markdown to WordPress and keep the WordPress theme as is</strong>. So here comes my first experience with <code>goodpress</code>, which is really fun and thanks to Maëlle’s help I finally work through the whole workflow.</p>
+<h2 id="example">Example</h2>
+<p>As mentioned above, the most important feature I need is if <code>goodpress</code> could post R code and outputs to WordPress and render them as I expect, so I first checked with my previous <a href="https://github.com/rfordatascience/tidytuesday">Tidytuesday</a> case.</p>
 <div class="highlight">
-
 <pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='k'><a href='http://tidyverse.tidyverse.org'>tidyverse</a></span>)
 
 <span class='k'>firsts</span> <span class='o'>&lt;-</span> <span class='nf'>read_csv</span>(<span class='s'>'https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-06-09/firsts.csv'</span>)</code></pre>
-
 </div>
-
 <div class="highlight">
-
 <pre class='chroma'><code class='language-r' data-lang='r'><span class='k'>firsts</span>
 <span class='c'>#&gt; <span style='color: #555555;'># A tibble: 479 x 5</span></span>
 <span class='c'>#&gt;     year accomplishment              person                gender     category  </span>
@@ -65,11 +36,8 @@ As mentioned above, the most important feature I need is if `goodpress` could po
 <span class='c'>#&gt; <span style='color: #555555;'> 9</span><span>  </span><span style='text-decoration: underline;'>1</span><span>785 First African-American ord… Rev. Lemuel Haynes. … African-A… Religion  </span></span>
 <span class='c'>#&gt; <span style='color: #555555;'>10</span><span>  </span><span style='text-decoration: underline;'>1</span><span>792 First major African-Americ… 3,000 Black Loyalist… African-A… Social &amp; …</span></span>
 <span class='c'>#&gt; <span style='color: #555555;'># … with 469 more rows</span></span></code></pre>
-
 </div>
-
 <div class="highlight">
-
 <pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'>ggplot</span>(<span class='k'>firsts</span>, <span class='nf'>aes</span>(<span class='k'>year</span>, <span class='k'>category</span>, color = <span class='k'>category</span>)) <span class='o'>+</span>
   <span class='nf'>geom_point</span>(alpha = <span class='m'>0.6</span>) <span class='o'>+</span>
   <span class='nf'>scale_x_continuous</span>(breaks = <span class='nf'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='m'>1730</span>, <span class='m'>2020</span>, <span class='m'>10</span>),
@@ -89,40 +57,20 @@ As mentioned above, the most important feature I need is if `goodpress` could po
         axis.text.x = <span class='nf'>element_text</span>(angle = <span class='o'>-</span><span class='m'>60</span>, vjust = <span class='m'>1</span>, hjust = <span class='m'>0</span>),
         axis.title = <span class='nf'>element_text</span>(color = <span class='s'>"white"</span>))
 </code></pre>
-<img src="figs/unnamed-chunk-3-1.png" width="700px" style="display: block; margin: auto;" />
-
+<p><img src="figs/unnamed-chunk-3-1.png" width="700px" style="display: block; margin: auto;" /></p>
 </div>
-
-It looks everything is perfect! For more inspirations, check `goodpress` demo site: <https://rmd-wordpress.eu/>.
-
-Issues
-------
-
-The `goodpress` [instructions](https://maelle.github.io/goodpress/index.html) are quite straightforward and you can follow the documentation step by step, but when I first tried `goodpress` I did have some issues that I want to point out so that you don't make the same mistakes I made.
-
-### Authentication Setup
-
-Following the steps in [Authentication](https://maelle.github.io/goodpress/articles/setup.html#authentication-1), the first mistake I made is that I should not use the WordPress user and password for `WP_USER` and `WP_PWD`. Instead, I should use the information of `Application Passwords` in WordPress, as shown below.
-
+<p>It looks everything is perfect! For more inspirations, check <code>goodpress</code> demo site: <a href="https://rmd-wordpress.eu/" class="uri">https://rmd-wordpress.eu/</a>.</p>
+<h2 id="issues">Issues</h2>
+<p>The <code>goodpress</code> <a href="https://maelle.github.io/goodpress/index.html">instructions</a> are quite straightforward and you can follow the documentation step by step, but when I first tried <code>goodpress</code> I did have some issues that I want to point out so that you don’t make the same mistakes I made.</p>
+<h3 id="authentication-setup">Authentication Setup</h3>
+<p>Following the steps in <a href="https://maelle.github.io/goodpress/articles/setup.html#authentication-1">Authentication</a>, the first mistake I made is that I should not use the WordPress user and password for <code>WP_USER</code> and <code>WP_PWD</code>. Instead, I should use the information of <code>Application Passwords</code> in WordPress, as shown below.</p>
 <div class="highlight">
-
-<img src="figs/wp.png" width="700px" style="display: block; margin: auto;" />
-
+<p><img src="figs/wp.png" width="700px" style="display: block; margin: auto;" /></p>
 </div>
-
-### YAML Format
-
-So far, `goodpress` seems very strict with the YAML metadata format. For example, for the `Author` you can either eliminate it or use one of the **existing usernames** of your WordPress. I suggest to copy the YAML header from the documentation: <https://maelle.github.io/goodpress/index.html>.
-
-More features
--------------
-
-`goodpress` is still a WIP package and only has one function of [wp\_post](https://maelle.github.io/goodpress/reference/wp_post.html). While it solves my problem, I do look forward to more features to improve the whole experience. For example, I cannot remember all the category and tag names and I have to go back to check them on WordPress dashboard. Probably it can be done with another function so that I can forget WordPress dashboard?
-
-Final Note
-----------
-
-As shown above, `goodpress` is what I want and the workflow from R Markdown to WordPress is way better than before. I highly recommend it to WordPress users who often write blogs about R.
-
-*This post is written in R Markdown and posted to WordPress via `goodpress`(version: 0.0.0.9000)*.
-
+<h3 id="yaml-format">YAML Format</h3>
+<p>So far, <code>goodpress</code> seems very strict with the YAML metadata format. For example, for the <code>Author</code> you can either eliminate it or use one of the <strong>existing usernames</strong> of your WordPress. I suggest to copy the YAML header from the documentation: <a href="https://maelle.github.io/goodpress/index.html" class="uri">https://maelle.github.io/goodpress/index.html</a>.</p>
+<h2 id="more-features">More features</h2>
+<p><code>goodpress</code> is still a WIP package and only has one function of <a href="https://maelle.github.io/goodpress/reference/wp_post.html">wp_post</a>. While it solves my problem, I do look forward to more features to improve the whole experience. For example, I cannot remember all the category and tag names and I have to go back to check them on WordPress dashboard. Probably it can be done with another function so that I can forget WordPress dashboard?</p>
+<h2 id="final-note">Final Note</h2>
+<p>As shown above, <code>goodpress</code> is what I want and the workflow from R Markdown to WordPress is way better than before. I highly recommend it to WordPress users who often write blogs about R.</p>
+<p><em>This post is written in R Markdown and posted to WordPress via <code>goodpress</code>(version: 0.0.0.9000)</em>.</p>

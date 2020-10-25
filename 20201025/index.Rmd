@@ -1,0 +1,145 @@
+---
+title: "Marketing Analytics with R - Google Search Console"
+author: "Henry"
+date: "2020-10-25T11:30:00"
+output: hugodown::md_document
+status: "publish"
+slug: "google-search-console-r"
+categories: Marketing Analytics
+tags:
+  - Marketing Analytics with R
+  - Google Search Console with R
+  - searchConsoleR package
+---
+
+```{r setup, include=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+load("console.rda")
+```
+
+I have been exploring a couple of marketing platforms in my new job as a Marketing Analyst. One of the daily jobs which I like most is to use R to dig into data across different marketing channels to come up with new ideas and recommendations for our marketing activities. 
+
+## Google Search Console
+
+Google Search Console is one of the platforms I have been playing with recently. As you may already know, Google Search Console is a useful website tool for marketers to check website overall performance (e.g., search engine crawl and index issues, google search performance). For example, here is the performance report for my personal blog:
+
+```{=html}
+<!-- wp:more -->
+<!--more-->
+<!-- /wp:more -->
+```
+
+```{r echo=FALSE, fig.cap="Google Search Performance report for my blog"}
+knitr::include_graphics(file.path("figs", "console.png"))
+```
+
+As you can see from the report, my blog has an average position of 28.4 on the search results, with a gradual increase in terms of impressions and clicks in the past 3 months.
+
+Besides the overall performance report, Google Search Console also provides detailed information for different dimensions, such as `query`, `page` and `country` etc.
+
+## searchConsoleR Package
+
+[searchConsoleR](https://github.com/MarkEdmondson1234/searchConsoleR) is the r package I'm using to work with Google Search Console data. It is developed by [Mark Edmondson](http://code.markedmondson.me/), who also developed a bunch of other Google related r packages such as [googleAnalyticsR](https://code.markedmondson.me/googleAnalyticsR/). Highly recommend to check out his work if you want to do marketing analytics with R.
+
+## Pull Data from Google Search Console
+
+I mainly use search_analytics() function in `searchConsoleR` to access my Google Search Console. 
+
+Firt load the packages:
+```{r warning=FALSE, message=FALSE}
+library(searchConsoleR)
+library(tidyverse)
+library(ggrepel)
+```
+
+Get the `query` data in the last 3 months (by default):
+```{r eval=FALSE}
+# authentication 
+scr_auth()
+
+query <- search_analytics(
+  siteURL = "https://henrywang.nl/",
+  dimensions = "query"
+) %>% 
+  as_tibble()
+
+query %>% 
+  head(10)
+```
+
+```{r echo=FALSE}
+query %>% 
+  head(10)
+```
+
+Get the `page` data:
+```{r eval=FALSE}
+page <- search_analytics(
+  siteURL = "https://henrywang.nl/",
+  dimensions = "query"
+) %>% 
+  as_tibble()
+
+page %>% 
+  head(10)
+```
+
+```{r echo=FALSE}
+page %>% 
+  head(10)
+```
+
+Get query data for each page (answer questions like *which keyword is driving traffic to one specific page?*):
+
+```{r eval=FALSE}
+page_query <- search_analytics(
+  siteURL = "https://henrywang.nl/",
+  dimensions = "query"
+) %>% 
+  as_tibble() %>% 
+  group_by(page) %>% 
+  arrange(desc(impressions)) %>% 
+
+page_query %>% 
+  head(10)
+```
+
+```{r echo=FALSE}
+page_query %>% 
+  group_by(page) %>% 
+  arrange(desc(impressions)) %>% 
+  head(10)
+```
+
+## Query Performance Analysis
+
+Depends on different marketing objectives, these data can be used in different ways. As suggested by Google, one of the use cases is to **identify queries with high impressions but low ctr and then try to improve them**. These keywords are important because, for example, my blog is shown quite often for those queries on the search results but people don't click the link to my blog proportionally. 
+
+These keywords can be identified as follows:
+
+```{r google-search-console-data-analysis-r, fig.cap="Queries with High Impressions but Low CTR"}
+query %>% 
+  # remove queries with very few impressions
+  filter(impressions > 20) %>% 
+  ggplot(aes(ctr, impressions, label = query)) +
+  geom_point(alpha = .5, size = .8) +
+  geom_text_repel(size = 3) +
+  # average impression is around 90
+  geom_hline(yintercept = 90, color = "red", linetype = "dotdash") +
+  # average ctr is 6%
+  geom_vline(xintercept = .06, color = "red", linetype = "dotdash") +
+  scale_y_log10() +
+  scale_x_continuous(labels = scales::label_percent(accuracy = 1),
+                     breaks = seq(0, .3, .05))
+```
+
+As you can see from the graph, the top-left grid of the plot shows the queries with high impressions but low ctr, among which are a few keywords (e.g., `ggplot2 themes`) linked to [ggplot2 Theme Elements Demonstration
+](https://henrywang.nl/ggplot2-theme-elements-demonstration/). 
+
+```{r echo=FALSE, fig.cap="Page Title and Snippet to My Blog on SERP"}
+knitr::include_graphics(file.path("figs", "ggplot2themes.png"))
+```
+
+What I can do next is to improve the page title and meta description to make it more relevant on the search results so that the CTR could be increased, resulting in more traffic to my blog. *I didn't do this for my blog as I don't want to go that far in that direction but it is highly recommended to implement it for your company website.*
+
+This is an example of what we can do with R to conduct marketing analyses. I hope I can share with you more and will keep writing blogs about marketing analysis with R in the next coming weeks! 

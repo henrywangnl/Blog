@@ -85,7 +85,7 @@ The `goodpress` [instructions](https://maelle.github.io/goodpress/index.html) ar
 
 Following the steps in [Authentication](https://maelle.github.io/goodpress/articles/setup.html#authentication-1), the first mistake I made is that I should not use the WordPress user and password for `WP_USER` and `WP_PWD`. Instead, I should use the information of `Application Passwords` in WordPress, as shown below.
 
-```{r echo=FALSE, fig.cap="screenshot of the application password part of the WordPress dashboard"}
+```{r echo=FALSE}
 knitr::include_graphics(file.path("figs", "wp.png"))
 ```
 

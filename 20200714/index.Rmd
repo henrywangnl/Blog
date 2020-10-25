@@ -12,6 +12,10 @@ tags:
   - Logistic Regression
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
 >"A receiver operating characteristic curve, or ROC curve, is a graphical plot that illustrates the diagnostic ability of a binary classifier system as its discrimination threshold is varied. The ROC curve is created by plotting the true positive rate against the false positive rate at various threshold settings." - Wikipedia
 
 Simulation can be very useful for us to understand some concepts in Statistics, as shown in [Probability in R](https://henrywang.nl/probability-in-r/). Here is another example that I used simulation to understand ROC Curve and AUC, the metrics in classification models that I had never fully understand. 
