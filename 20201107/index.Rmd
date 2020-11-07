@@ -1,0 +1,59 @@
+---
+params:
+  post_title: "HubSpot Contact Properties List"
+title: "`r params$post_title`"
+date: "`r format(Sys.time(), '%Y-%m-%dT%H:%M:%S')`"
+output: hugodown::md_document
+slug: "`r gsub(' ', '-', tolower(params$post_title))`"
+status: "publish"
+comment_status: "open"
+categories: Marketing Analytics
+tags:
+  - HubSpot Contact Properties
+  - HubSpot Contact Properties List
+  - HubSpot Contact Properties API
+---
+
+Here is a lookup table of HubSpot's default contact properties.
+
+```{r echo=FALSE}
+knitr::include_graphics(file.path("figs", "hubspot.jpg"))
+```
+
+I have been working on HubSpot data analysis with R on a daily basis and having a good understanding of contact properties can save me a lot of time. HubSpot provides the [properties CRM api](https://developers.hubspot.com/docs/api/crm/properties) for developers to get the contact properties list and also provides the explanations of all the default contact properties: [https://knowledge.hubspot.com/contacts/hubspots-default-contact-properties](https://knowledge.hubspot.com/contacts/hubspots-default-contact-properties).
+
+`r goodpress::read_more()`
+However, sometimes I find it a bit difficult to `guess` which property I should use to answer a question because the internal names of those properties are not that explicit. For example, `Marketing emails opened` is the property I should use to track the number of marketing emails a contact has opened but it took me a while to figure out the internal name is called `hs_email_open`. Therefore, I need a lookup table to show these information:
+
+* `name`: the internal name for data analysis, which is like variable name in a data frame;
+* `label`: the label name on HubSpot platform, which is easy to remember;
+* `description`: more information about a property;
+
+Feel free to use it but please be aware that these are just the default contact properties from my [test developer account](https://developers.hubspot.com/docs/api/creating-test-accounts). As such, please check [HubSpot API](https://developers.hubspot.com/docs/api/crm/properties) if you want to have a full list of all your properties.
+
+If you like you can use my R code below:
+
+```{r eval=FALSE, message=FALSE}
+library(dplyr)
+library(httr)
+library(jsonlite)
+
+base_url <- "https://api.hubapi.com/crm/v3"
+key <- "<Your HubSpot API Key>"
+
+data <- paste0(base_url, "/properties/contacts?hapikey=", key) %>%
+  GET() %>%
+  content(as = "text") %>%
+  fromJSON(flatten = TRUE)
+
+contact_properties <- data$results
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(dplyr)
+load("contact_properties_lookup.rda")
+knitr::kable(contact_properties_lookup %>% select(name, label, description),
+             caption = "HubSpot's Default Contact Properties List")
+```
+
+
