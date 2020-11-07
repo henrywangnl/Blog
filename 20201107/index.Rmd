@@ -12,6 +12,7 @@ tags:
   - HubSpot Contact Properties
   - HubSpot Contact Properties List
   - HubSpot Contact Properties API
+  - HubSpot
 ---
 
 Here is a lookup table of HubSpot's default contact properties.
