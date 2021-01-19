@@ -51,10 +51,9 @@ contact_properties <- data$results
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-library(dplyr)
 load("contact_properties_lookup.rda")
-knitr::kable(contact_properties_lookup %>% select(name, label, description),
-             caption = "HubSpot's Default Contact Properties List")
+dt <- contact_properties_lookup[c("name", "label", "description")]
+knitr::kable(dt)
 ```
 
 
