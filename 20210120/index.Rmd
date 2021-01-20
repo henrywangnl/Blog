@@ -1,5 +1,5 @@
 ---
-title: "Transform List into Dataframe With tidyr and purrr"
+title: "Transform List into Dataframe with tidyr and purrr"
 output: hugodown::md_document
 status: "publish"
 comment_status: "open"
@@ -10,7 +10,11 @@ tags:
   - list with tidyr vs purrr
 ---
 
-As a data structure in R, list is not as familiar to me as vector and dataframe. I knew that list is often returned by function calls and I didn't pay much attention to it until I started working on the API wrapper package [RLeadfeeder](https://github.com/henrywangnl/RLeadfeeder). It turned out that list can be very useful to hold all kinds of data returned from API platforms and I had to make an effort to learn how to work with it, namely extract useful elements from a list and turn them into a dataframe.
+As a data structure in R, list is not as familiar to me as vector and dataframe. I knew that list is often returned by function calls but I didn't pay much attention to it until I started working on the API wrapper package [RLeadfeeder](https://github.com/henrywangnl/RLeadfeeder). It turned out that list can be very useful to hold all kinds of data returned from API platforms and I had to make an effort to learn how to work with it, namely extract useful elements from a list and turn them into a dataframe.
+
+```{r fig.cap="Transform List into Data Frame in R", echo=FALSE}
+knitr::include_graphics(file.path("figs", "list2dataframe.png"))
+```
 
 This post is an example of how to transfrom a list into a dataframe with two different approaches: tidyr and purrr. The packages used in this post are as follows:
 
@@ -24,12 +28,11 @@ library(listviewer) # for jsonedit()
 library(repurrrsive) # for gh_repos dataset
 ```
 
-
 ## Inspection
 
 Start with the inspection of list elements using `listviewer` package.
 
-**Task 1: Examine and understand list elements interactively.**
+> Task 1: Examine and understand list elements interactively.
 
 ```{r eval=FALSE}
 jsonedit(gh_repos)
@@ -37,7 +40,7 @@ jsonedit(gh_repos)
 
 ## Extract Multiple Elements at the same level
 
-**Task 2: Extract each repository's name and full name.**
+> Task 2: Extract each repository's name and full name.
 
 ### purrr approach
 
@@ -45,7 +48,6 @@ jsonedit(gh_repos)
 gh_repos %>% 
   map_df(~map(.x, `[`, c("name", "full_name")))
 ```
-
 
 ```{r}
 # replace `[` with magrittr::extract() 
@@ -61,10 +63,9 @@ tibble(repo = gh_repos) %>%
   hoist(repo, "name", "full_name")
 ```
 
-
 ## Extract Multiple Elements at different levels
 
-**Task 3: Extract each repository's name, full name, and owner's username (`owner` -> `login`).**
+> Task 3: Extract each repository's name, full name, and owner's username (`owner` -&gt; `login`).
 
 ### purrr approach
 
@@ -84,7 +85,7 @@ username <- gh_repos %>%
 tibble(name, full_name, username)
 ```
 
-### tidyr approach 
+### tidyr approach
 
 ```{r}
 tibble(repo = gh_repos) %>% 
@@ -97,7 +98,7 @@ tibble(repo = gh_repos) %>%
 
 As shown above, both approaches work fine but `tidyr` approach seems easier and more flexible to me. For example, considering the following question:
 
-**Task 4: Extract the full name of each user's first repository.**
+> Task 4: Extract the full name of each user's first repository.
 
 ```{r}
 tibble(repo = gh_repos) %>% 
@@ -115,5 +116,5 @@ tibble(repo = gh_repos) %>%
 
 Last but not least I find these two resources are very useful for me to learn how to work with list:
 
-* purrr tutorial: https://jennybc.github.io/purrr-tutorial/index.html
-* tidyr rectangling: https://tidyr.tidyverse.org/articles/rectangle.html
+-   purrr tutorial: <https://jennybc.github.io/purrr-tutorial/index.html>
+-   tidyr rectangling: <https://tidyr.tidyverse.org/articles/rectangle.html>

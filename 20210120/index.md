@@ -1,5 +1,5 @@
 ---
-title: "Transform List into Dataframe With tidyr and purrr"
+title: "Transform List into Dataframe with tidyr and purrr"
 output: hugodown::md_document
 status: "publish"
 comment_status: "open"
@@ -8,11 +8,24 @@ tags:
   - List Manipulation in R
   - hoist() vs map()
   - list with tidyr vs purrr
-rmd_hash: 40647307390f7e1e
+rmd_hash: 618455c43911d90b
 
 ---
 
-As a data structure in R, list is not as familiar to me as vector and dataframe. I knew that list is often returned by function calls and I didn't pay much attention to it until I started working on the API wrapper package [RLeadfeeder](https://github.com/henrywangnl/RLeadfeeder). It turned out that list can be very useful to hold all kinds of data returned from API platforms and I had to make an effort to learn how to work with it, namely extract useful elements from a list and turn them into a dataframe.
+As a data structure in R, list is not as familiar to me as vector and dataframe. I knew that list is often returned by function calls but I didn't pay much attention to it until I started working on the API wrapper package [RLeadfeeder](https://github.com/henrywangnl/RLeadfeeder). It turned out that list can be very useful to hold all kinds of data returned from API platforms and I had to make an effort to learn how to work with it, namely extract useful elements from a list and turn them into a dataframe.
+
+<div class="highlight">
+
+<div class="figure" style="text-align: center">
+
+<img src="figs/list2dataframe.png" alt="Transform List into Data Frame in R" width="700px" />
+<p class="caption">
+Transform List into Data Frame in R
+</p>
+
+</div>
+
+</div>
 
 This post is an example of how to transfrom a list into a dataframe with two different approaches: tidyr and purrr. The packages used in this post are as follows:
 
@@ -36,7 +49,7 @@ Inspection
 
 Start with the inspection of list elements using `listviewer` package.
 
-**Task 1: Examine and understand list elements interactively.**
+> Task 1: Examine and understand list elements interactively.
 
 <div class="highlight">
 
@@ -48,7 +61,7 @@ Start with the inspection of list elements using `listviewer` package.
 Extract Multiple Elements at the same level
 -------------------------------------------
 
-**Task 2: Extract each repository's name and full name.**
+> Task 2: Extract each repository's name and full name.
 
 ### purrr approach
 
@@ -113,7 +126,7 @@ Extract Multiple Elements at the same level
 Extract Multiple Elements at different levels
 ---------------------------------------------
 
-**Task 3: Extract each repository's name, full name, and owner's username (`owner` -&gt; `login`).**
+> Task 3: Extract each repository's name, full name, and owner's username (`owner` -&gt; `login`).
 
 ### purrr approach
 
@@ -183,7 +196,7 @@ Preference
 
 As shown above, both approaches work fine but `tidyr` approach seems easier and more flexible to me. For example, considering the following question:
 
-**Task 4: Extract the full name of each user's first repository.**
+> Task 4: Extract the full name of each user's first repository.
 
 <div class="highlight">
 
