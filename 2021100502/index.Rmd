@@ -1,0 +1,38 @@
+---
+params:
+  post_title: "HubSpot Deal Properties List"
+title: "`r params$post_title`"
+date: "`r format(Sys.time(), '%Y-%m-%dT%H:%M:%S')`"
+output: hugodown::md_document
+slug: "`r gsub(' ', '-', tolower(params$post_title))`"
+status: "publish"
+comment_status: "open"
+categories: Marketing Analytics
+tags:
+  - HubSpot Deal Properties
+  - HubSpot Deal Properties List
+  - HubSpot Deal Properties API
+  - HubSpot
+---
+
+Here is a lookup table of HubSpot's default **deal** properties.
+
+* `name`: the internal name for data analysis, which is like variable name in a data frame;
+* `label`: the label name on HubSpot platform, which is easy to remember;
+* `description`: more information about a property;
+
+```{r echo=FALSE}
+knitr::include_graphics(file.path("figs", "hubspot.jpg"))
+```
+
+Feel free to use it but please be aware that these are just the default deal properties from my [test developer account](https://developers.hubspot.com/docs/api/creating-test-accounts). As such, please check [HubSpot API](https://developers.hubspot.com/docs/api/crm/properties) if you want to have a full list of all your properties.
+
+`r goodpress::read_more()`
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+load("deal_properties_lookup.rda")
+dt <- deal_properties[c("name", "label", "description")]
+knitr::kable(dt)
+```
+
+

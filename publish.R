@@ -2,7 +2,7 @@
 library(goodpress)
 
 # setup
-post_folder <- "20210120"
+post_folder <- "20211005"
 wordpress_url <- "https://henrywang.nl"
 
 # publish
